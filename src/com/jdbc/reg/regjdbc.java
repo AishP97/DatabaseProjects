@@ -41,9 +41,7 @@ public class regjdbc {
 				String email = sc.nextLine();
 				System.out.println("Please provide your password:");
 				String pass = sc.nextLine();
-				
-				// Add validation for userName, email, password
-				// Check constraints for each validation
+			
 				
 				isExistingUser = checkIfExistingUser(userName, email, con);
 				if(!isExistingUser) {
