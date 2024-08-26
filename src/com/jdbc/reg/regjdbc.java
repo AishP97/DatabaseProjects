@@ -35,26 +35,32 @@ public class regjdbc {
 			switch(ch) {
 			case 1:
 				System.out.println("This is Insert Case !!!");
-				System.out.println("Please your Username: ");
-				String userName = sc.nextLine();
-				System.out.println("Please provide your Email: ");
-				String email = sc.nextLine();
-				System.out.println("Please provide your password:");
-				String pass = sc.nextLine();
-				
-				// Add validation for userName, email, password
-				// Check constraints for each validation
-				
-				isExistingUser = checkIfExistingUser(userName, email, con);
-				if(!isExistingUser) {
-					insertIntoDb(userName,email,pass,con);
-				}else {
-					System.out.println("This username is already taken, kindly choose a different UserName");
+
+				while(true) {
+					System.out.println("Please provide your Username: ");
+					String userName = sc.nextLine();
+					
+					if(isValidUsername(userName)) {
+						System.out.println("Please provide your Email: ");
+						String email = sc.nextLine();
+						System.out.println("Please provide your password:"); 
+						String pass = sc.nextLine();
+						
+						isExistingUser = checkIfExistingUser(userName, email, con);
+						if(!isExistingUser) {
+							insertIntoDb(userName,email,pass,con);
+						}else {
+							System.out.println("This username is already taken, kindly choose a different UserName");
+						}
+						break;
+					}else {
+		                System.out.println(userName + " is not a valid username. It must contain only alphanumeric characters and no spaces or special characters.");
+					}
 				}
-				break;
+				
 			case 2:
 				System.out.println("Entering Update Case !!!");
-				updateIntoDb();
+				updateIntoDb(con);
 				break;
 			default:
 				System.out.println("Invalid Option ! Please select from given options only. ");
@@ -65,6 +71,43 @@ public class regjdbc {
 			System.out.println(e);
 		}
 		
+	}
+	
+	private static boolean isValidPassword(String pass) {
+		boolean isValidPass = false;
+		String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()]).{8,}$";
+		if(pass.matches(regex)) {
+			isValidPass = true;
+		}else {
+			if(pass.length() < 8) {
+				System.out.println("Password must be 8 characters long !");
+			}if(!pass.matches(".*[a-z].*")) {
+				System.out.println("Password must contain at least one lowercase letter.");
+			}
+			if(!pass.matches(".*[A-Z].*")) {
+				System.out.println("Password must contain at least one uppercase letter.");
+			}
+			if(!pass.matches(".*\\d.*")) {
+				System.out.println("Password must contain at least one digit.");
+			}
+			if(!pass.matches(".*[!@#$%^&*()].*")) {
+				System.out.println("Password must contain at least one special character (!@#$%^&*()).");
+			}
+			isValidPass = false;
+			
+		}
+		return isValidPass;
+		
+	}
+	
+	private static boolean isValidUsername(String userName2) {
+		boolean isValid = false;
+		String regex = "^[a-zA-Z0-9]+$";
+		if(userName2 != null && userName2.matches(regex)) {
+			isValid = true;
+		}
+		
+		return isValid;
 	}
 	
 	// This method is good
@@ -94,7 +137,6 @@ public class regjdbc {
 
 	// This method is good
 	public static void insertIntoDb(String user, String email, String pass,Connection con) {
-		
 
 		try {
 			
@@ -120,16 +162,16 @@ public class regjdbc {
 		
 	}
 	
-	public static void updateIntoDb() throws SQLException, NumberFormatException{
+	public static void updateIntoDb(Connection con) throws SQLException, NumberFormatException{
 		
 		System.out.println("Updating records into Database");
 		System.out.println("Enter a Registration ID to update :");
-		int reg = Integer.parseInt(sc.nextLine());
+		int reg_id = Integer.parseInt(sc.nextLine());
 		
-		String sql ="select * from reg_details where reg_id = ?";
+		String sql = " SELECT * FROM REG_DETAILS WHERE REG_ID = ? ";
 		PreparedStatement pstatement = con.prepareStatement(sql);
-		pstatement.setInt(1, reg);
-		ResultSet result = pstatement.executeQuery(sql);
+		pstatement.setInt(1, reg_id);
+		ResultSet result = pstatement.executeQuery();
 	
 		if(result.next()) {
 			int regid = result.getInt("reg_id");
