@@ -35,6 +35,7 @@ public class regjdbc {
 			switch(ch) {
 			case 1:
 				System.out.println("This is Insert Case !!!");
+<<<<<<< HEAD
 
 				while(true) {
 					System.out.println("Please provide your Username: ");
@@ -61,6 +62,22 @@ public class regjdbc {
 					}else {
 		                System.out.println(userName + " is not a valid username. It must contain only alphanumeric characters and no spaces or special characters.");
 					}
+=======
+				System.out.println("Please your Username: ");
+				String userName = sc.nextLine();
+				System.out.println("Please provide your Email: ");
+				String email = sc.nextLine();
+				System.out.println("Please provide your password:");
+				String pass = sc.nextLine();
+			
+				
+				isExistingUser = checkIfExistingUser(userName, email, con);
+				if(!isExistingUser) {
+					insertIntoDb(userName,email,pass,con);
+				}else {
+					System.out.println("This username is already taken, kindly choose a different UserName");
+				}
+>>>>>>> bd4d5f2d8693aa031a0b1f674397e2e32d5e1037
 				break;
 				}
 			break;
