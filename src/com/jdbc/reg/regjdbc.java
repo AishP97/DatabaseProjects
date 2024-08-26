@@ -43,21 +43,27 @@ public class regjdbc {
 					if(isValidUsername(userName)) {
 						System.out.println("Please provide your Email: ");
 						String email = sc.nextLine();
+						while(true) {
 						System.out.println("Please provide your password:"); 
 						String pass = sc.nextLine();
-						
-						isExistingUser = checkIfExistingUser(userName, email, con);
-						if(!isExistingUser) {
-							insertIntoDb(userName,email,pass,con);
-						}else {
-							System.out.println("This username is already taken, kindly choose a different UserName");
+						if(isValidPassword(pass)) {
+							
+							isExistingUser = checkIfExistingUser(userName, email, con);
+							if(!isExistingUser) {
+								insertIntoDb(userName,email,pass,con);
+							}else {
+								System.out.println("This username is already taken, kindly choose a different UserName");
+							}
 						}
 						break;
+					 }
+					break;
 					}else {
 		                System.out.println(userName + " is not a valid username. It must contain only alphanumeric characters and no spaces or special characters.");
 					}
+				break;
 				}
-				
+			break;
 			case 2:
 				System.out.println("Entering Update Case !!!");
 				updateIntoDb(con);
@@ -109,6 +115,7 @@ public class regjdbc {
 		
 		return isValid;
 	}
+	
 	
 	// This method is good
 	private static boolean checkIfExistingUser(String userName2, String email2, Connection con) {
