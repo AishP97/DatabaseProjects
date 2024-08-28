@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.*;
 import java.sql.ResultSet;
 
+
 public class regjdbc {
 	
 	public static String userName = null;
@@ -17,10 +18,10 @@ public class regjdbc {
 	private static Connection con = null;
 	public static boolean isExistingUser = false;
 	public static Scanner sc = new Scanner(System.in);
-	public static String sqlQuery = "update reg_details set ";
+	public static java.lang.String sqlQuery = "update reg_details set ";
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+		
 
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
@@ -221,49 +222,17 @@ public class regjdbc {
 
 		if (result.next()) {
 			int regid = result.getInt("reg_id");
-			String username = result.getString("username");
-			String email = result.getString("email");
-			String password = result.getString("password");
-			Date date = result.getDate("dor");
-
-			System.out.println("Registration ID : " + regid);
-			System.out.println("Username : " + username);
-			System.out.println("Email : " + email);
-			System.out.println("Password : " + password);
-			System.out.println("Date : " + date);
-
-			System.out.println("What do you want to update ? ");
-			System.out.println("1. Email");
-			System.out.println("2. Password");
+			printDetailsToBeUpdated(result, regid);
 
 			int choice = Integer.parseInt(sc.nextLine());
 			
 
 			switch (choice) {
 			case 1:
-				System.out.println("Enter new Email :");
-				String newEmail = sc.nextLine();
-				sqlQuery = sqlQuery + "email = ? where reg_id = ?";
-				PreparedStatement mt = con.prepareStatement(sqlQuery);
-				mt.setString(1, newEmail);
-				mt.setInt(2, regid);
-				
-				int rows = mt.executeUpdate();
-				if (rows > 0) {
-					System.out.println("Email updated successfully");
-				}
+				updateToNewEmail(con, regid); // Accepts new email and updates it
 				break;
 			case 2:
-				System.out.println("Enter new Password :");
-				String newPass = sc.nextLine();
-				sqlQuery = sqlQuery + "password = ? where reg_id = ?";
-				PreparedStatement mt2 = con.prepareStatement(sqlQuery);
-				mt2.setString(1, newPass);
-				mt2.setInt(2, regid);
-				int rows2 = mt2.executeUpdate();
-				if (rows2 > 0) {
-					System.out.println("Password updated successfully");
-				}
+				updateToNewPassword(con, regid); // Accepts new password and updates it
 				break;
 			default:
 				break;
@@ -271,6 +240,50 @@ public class regjdbc {
 
 		} else {
 			System.out.println("Records not found !");
+		}
+	}
+
+	private static void printDetailsToBeUpdated(ResultSet result, int regid) throws SQLException {
+		String username = result.getString("username");
+		String email = result.getString("email");
+		String password = result.getString("password");
+		Date date = result.getDate("dor");
+
+		System.out.println("Registration ID : " + regid);
+		System.out.println("Username : " + username);
+		System.out.println("Email : " + email);
+		System.out.println("Password : " + password);
+		System.out.println("Date : " + date);
+
+		System.out.println("What do you want to update ? ");
+		System.out.println("1. Email");
+		System.out.println("2. Password");
+	}
+
+	private static void updateToNewPassword(Connection con, int regid) throws SQLException {
+		System.out.println("Enter new Password :");
+		String newPass = sc.nextLine();
+		sqlQuery = sqlQuery + "password = ? where reg_id = ?";
+		PreparedStatement mt2 = con.prepareStatement(sqlQuery);
+		mt2.setString(1, newPass);
+		mt2.setInt(2, regid);
+		int rows2 = mt2.executeUpdate();
+		if (rows2 > 0) {
+			System.out.println("Password updated successfully");
+		}
+	}
+
+	private static void updateToNewEmail(Connection con, int regid) throws SQLException {
+		System.out.println("Enter new Email :");
+		String newEmail = sc.nextLine();
+		sqlQuery = sqlQuery + "email = ? where reg_id = ?";
+		PreparedStatement mt = con.prepareStatement(sqlQuery);
+		mt.setString(1, newEmail);
+		mt.setInt(2, regid);
+		
+		int rows = mt.executeUpdate();
+		if (rows > 0) {
+			System.out.println("Email updated successfully");
 		}
 	}
 	
