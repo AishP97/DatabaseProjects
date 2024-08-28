@@ -53,47 +53,61 @@ public class regjdbc {
 	}
 
 	private static void dataInsert(Connection con) {
-		System.out.println("This is Insert Case !!!");
+		System.out.println("Please Enter your details:");
 
-		while (true) {
+		boolean insertionSuccessful = false; // Flag to indicate successful insertion
+
+		while (!insertionSuccessful) { // Outer loop for user input
 			System.out.println("Please provide your Username: ");
 			String userName = sc.nextLine();
 
 			if (isValidUsername(userName)) {
-				
-				while(true) {
+
+				while (true) { // Loop for email input
 					System.out.println("Please provide your Email: ");
 					String email = sc.nextLine();
-					if(isValidemail(email)) {
-						
-						while (true) {
+
+					if (isValidEmail(email)) {
+
+						while (true) { // Loop for password input
 							System.out.println("Please provide your password:");
 							String pass = sc.nextLine();
-							
+
 							if (isValidPassword(pass)) {
 
 								isExistingUser = checkIfExistingUser(userName, email, con);
 								if (!isExistingUser) {
 									insertIntoDb(userName, email, pass, con);
+									insertionSuccessful = true; // Mark as successful
 									break; // Break out of the password loop after successful insertion
 								} else {
-									System.out.println("This username is already taken, kindly choose a different UserName");
+									System.out.println(
+											"This username is already taken, kindly choose a different UserName");
 									break; // Break out of the password loop to allow the user to re-enter details
 								}
+							} else {
+								System.out.println("Invalid password. Please try again.");
 							}
 						}
-					}break;
+
+						if (insertionSuccessful) {
+							break; // Break out of the email loop
+						}
+
+					} else {
+						System.out.println("Kindly provide a valid emailId");
+					}
 				}
-				
+
 			} else {
-				System.out.println(userName
-						+ " is not a valid username. It must contain only alphanumeric characters and no spaces or special characters.");
+				System.out.println("Kindly provide a valid Username");
 			}
-			
 		}
+
+		System.out.println("User successfully registered.");
 	}
 	
-	private static boolean isValidemail(String email2) {
+	private static boolean isValidEmail(String email2) {
 		boolean isValidEmail = false;
 		String emailRegex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
 
@@ -183,6 +197,7 @@ public class regjdbc {
 
 			if (set > 0) {
 				System.out.println("Record insert in database is successful");
+				
 			} else {
 				System.out.println("No records to be updated.");
 			}
@@ -232,7 +247,7 @@ public class regjdbc {
 				PreparedStatement mt = con.prepareStatement(sqlQuery);
 				mt.setString(1, newEmail);
 				mt.setInt(2, regid);
-
+				
 				int rows = mt.executeUpdate();
 				if (rows > 0) {
 					System.out.println("Email updated successfully");
