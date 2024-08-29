@@ -13,7 +13,7 @@ public class regjdbc {
 	
 	public static String userName = null;
 	public static String email = null;
-	public static String pass = null;
+	public static String pass = null;	
 	public static String action = null;
 	private static Connection con = null;
 	public static boolean isExistingUser = false;
@@ -215,15 +215,15 @@ public class regjdbc {
 		System.out.println("Enter a Registration ID to update :");
 		int reg_id = Integer.parseInt(sc.nextLine());
 
-		String sql = " SELECT * FROM REG_DETAILS WHERE REG_ID = ? ";
-		PreparedStatement pstatement = con.prepareStatement(sql);
-		pstatement.setInt(1, reg_id);
-		ResultSet result = pstatement.executeQuery();
+		ResultSet result = fetchDetailsFromDB(con, reg_id);
 
 		if (result.next()) {
 			int regid = result.getInt("reg_id");
 			printDetailsToBeUpdated(result, regid);
 
+			System.out.println("What do you want to update ? ");
+			System.out.println("1. Email");
+			System.out.println("2. Password");
 			int choice = Integer.parseInt(sc.nextLine());
 			
 
@@ -243,7 +243,16 @@ public class regjdbc {
 		}
 	}
 
-	private static void printDetailsToBeUpdated(ResultSet result, int regid) throws SQLException {
+	public static ResultSet fetchDetailsFromDB(Connection con, int reg_id) throws SQLException {
+		String sql = " SELECT * FROM REG_DETAILS WHERE REG_ID = ? ";
+		PreparedStatement pstatement = con.prepareStatement(sql);
+		pstatement.setInt(1, reg_id);
+		ResultSet result = pstatement.executeQuery();
+		return result;
+	}
+
+	public static void printDetailsToBeUpdated(ResultSet result, int regid) throws SQLException {
+		
 		String username = result.getString("username");
 		String email = result.getString("email");
 		String password = result.getString("password");
@@ -255,35 +264,72 @@ public class regjdbc {
 		System.out.println("Password : " + password);
 		System.out.println("Date : " + date);
 
-		System.out.println("What do you want to update ? ");
-		System.out.println("1. Email");
-		System.out.println("2. Password");
 	}
 
-	private static void updateToNewPassword(Connection con, int regid) throws SQLException {
-		System.out.println("Enter new Password :");
-		String newPass = sc.nextLine();
-		sqlQuery = sqlQuery + "password = ? where reg_id = ?";
-		PreparedStatement mt2 = con.prepareStatement(sqlQuery);
-		mt2.setString(1, newPass);
-		mt2.setInt(2, regid);
-		int rows2 = mt2.executeUpdate();
-		if (rows2 > 0) {
-			System.out.println("Password updated successfully");
+	public static void updateToNewPassword(Connection con, int regid) throws SQLException {
+		while(true) {	
+			System.out.println("Enter new Password :");
+			String newPass = sc.nextLine();
+			
+			if(isValidPassword(newPass)) {
+				sqlQuery = sqlQuery + "password = ? where reg_id = ?";
+				PreparedStatement mt2 = con.prepareStatement(sqlQuery);
+				mt2.setString(1, newPass);
+				mt2.setInt(2, regid);
+				int rows2 = mt2.executeUpdate();
+				if (rows2 > 0) {
+					System.out.println("Password updated successfully ! Updated details are as follows :");
+					ResultSet result = fetchDetailsFromDB(con,regid);
+					if(result.next()) {
+						String username = result.getString("username");
+						String email = result.getString("email");
+						String password = result.getString("password");
+						Date date = result.getDate("dor");
+						System.out.println("Registration ID : " + regid);
+						System.out.println("Username : " + username);
+						System.out.println("Email ID : " + email);
+						System.out.println("Previous Password : " + password + "  Updated Password : " + newPass);
+						System.out.println("Date : " + date);
+						break;
+					}
+				}
+			}else {
+				System.out.println("Invalid Password.Please try entering a valid password");
+			}
 		}
 	}
 
-	private static void updateToNewEmail(Connection con, int regid) throws SQLException {
-		System.out.println("Enter new Email :");
-		String newEmail = sc.nextLine();
-		sqlQuery = sqlQuery + "email = ? where reg_id = ?";
-		PreparedStatement mt = con.prepareStatement(sqlQuery);
-		mt.setString(1, newEmail);
-		mt.setInt(2, regid);
-		
-		int rows = mt.executeUpdate();
-		if (rows > 0) {
-			System.out.println("Email updated successfully");
+	public static void updateToNewEmail(Connection con, int regid) throws SQLException {
+		while(true) {
+			System.out.println("Enter new Email :");
+			String newEmail = sc.nextLine();
+			
+			if(isValidEmail(newEmail)) {
+				sqlQuery = sqlQuery + "email = ? where reg_id = ?";
+				PreparedStatement mt = con.prepareStatement(sqlQuery);
+				mt.setString(1, newEmail);
+				mt.setInt(2, regid);
+				
+				int rows = mt.executeUpdate();
+				if (rows > 0) {
+					System.out.println("Email updated successfully ! Updated details are as follows : ");
+					ResultSet result = fetchDetailsFromDB(con, regid);
+					if (result.next()) {
+						String username = result.getString("username");
+						String email = result.getString("email");
+						String password = result.getString("password");
+						Date date = result.getDate("dor");
+						System.out.println("Registration ID : " + regid);
+						System.out.println("Username : " + username);
+						System.out.println("Previous Email ID : " + email + "  Updated Email ID : " + newEmail );
+						System.out.println("Password : " + password);
+						System.out.println("Date : " + date);
+						break;
+					}
+				}
+			}else {
+				System.out.println("Invalid Email ! Please try entering a valid Email");
+			}
 		}
 	}
 	
