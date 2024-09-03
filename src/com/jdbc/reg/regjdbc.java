@@ -1,12 +1,7 @@
 package com.jdbc.reg;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Scanner;
-import java.sql.PreparedStatement;
 import java.sql.*;
-import java.sql.ResultSet;
 
 
 public class regjdbc {
@@ -31,6 +26,7 @@ public class regjdbc {
 			System.out.println("Welcome to table demoDb, Please enter your choice :");
 			System.out.println("1. Insert into Database ");
 			System.out.println("2. Update into Database");
+			System.out.println("3. Delete from Database");
 			int ch = Integer.parseInt(sc.nextLine());
 
 			switch (ch) {
@@ -41,7 +37,10 @@ public class regjdbc {
 			case 2:
 				updateIntoDb(con); // This will update the existing record
 				break; // break out of the case
-
+			
+			case 3:
+				deleteFromDb(con);
+				break;
 			default:
 				System.out.println("Invalid Option ! Please select from given options only. ");
 				break; // break out of the case
@@ -52,6 +51,8 @@ public class regjdbc {
 		}
 
 	}
+
+	
 
 	private static void dataInsert(Connection con) {
 		System.out.println("Please Enter your details:");
@@ -333,5 +334,33 @@ public class regjdbc {
 		}
 	}
 	
+	
+	private static void deleteFromDb(Connection con) throws SQLException {
+		// TODO Auto-generated method stub
+		System.out.println("Deleting records from DB :");
+		System.out.println("Enter a registration Id you want to delete :");
+		int reg_id = Integer.parseInt(sc.nextLine());
+		ResultSet result = fetchDetailsFromDB(con, reg_id);
+		if(result.next()) {
+			int regid  = result.getInt("reg_id");
+			String username = result.getString("username");
+			String email = result.getString("email");
+			String password = result.getString("password");
+			Date date = result.getDate("dor");
+			System.out.println("Registration ID : " + regid);
+			System.out.println("Username : " + username);
+			System.out.println("Email ID : " + email );
+			System.out.println("Password : " + password);
+			System.out.println("Date : " + date);
+		}
+		String sql = "delete from reg_details where reg_id = ?";
+		PreparedStatement smt = con.prepareStatement(sql);
+		smt.setInt(1, reg_id);
+		int rowsd = smt.executeUpdate();
+		if(rowsd > 0) {
+			System.out.println("Record Deleted successfully from table reg_details");
+		}
+			
+	}
 
 }
