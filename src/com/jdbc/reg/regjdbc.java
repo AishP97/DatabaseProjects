@@ -9,7 +9,6 @@ public class regjdbc {
 	public static String userName = null;
 	public static String email = null;
 	public static String pass = null;	
-	public static String action = null;
 	private static Connection con = null;
 	public static boolean isExistingUser = false;
 	public static Scanner sc = new Scanner(System.in);
@@ -353,13 +352,21 @@ public class regjdbc {
 			System.out.println("Password : " + password);
 			System.out.println("Date : " + date);
 		}
-		String sql = "delete from reg_details where reg_id = ?";
-		PreparedStatement smt = con.prepareStatement(sql);
-		smt.setInt(1, reg_id);
-		int rowsd = smt.executeUpdate();
-		if(rowsd > 0) {
-			System.out.println("Record Deleted successfully from table reg_details");
+		System.out.println("Are you sure ? ");
+		String ans = sc.nextLine();
+		if(("yes".equalsIgnoreCase(ans)) || ("YES".equalsIgnoreCase(ans)) || ("Yes".equalsIgnoreCase(ans))) {
+			String sql = "delete from reg_details where reg_id = ?";
+			PreparedStatement smt = con.prepareStatement(sql);
+			smt.setInt(1, reg_id);
+			int rowsd = smt.executeUpdate();
+			if(rowsd > 0) {
+				System.out.println("Record Deleted successfully from table reg_details");
+			}
+			
+		}else if (("no".equalsIgnoreCase(ans)) || ("NO".equalsIgnoreCase(ans)) || ("No".equalsIgnoreCase(ans)) ) {
+			System.out.println("Relax !! we got you, record not deleted yet !! ");
 		}
+		
 			
 	}
 
