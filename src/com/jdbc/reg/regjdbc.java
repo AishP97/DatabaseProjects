@@ -335,38 +335,40 @@ public class regjdbc {
 	
 	
 	private static void deleteFromDb(Connection con) throws SQLException {
-		// TODO Auto-generated method stub
-		System.out.println("Deleting records from DB :");
-		System.out.println("Enter a registration Id you want to delete :");
-		int reg_id = Integer.parseInt(sc.nextLine());
-		ResultSet result = fetchDetailsFromDB(con, reg_id);
-		if(result.next()) {
-			int regid  = result.getInt("reg_id");
-			String username = result.getString("username");
-			String email = result.getString("email");
-			String password = result.getString("password");
-			Date date = result.getDate("dor");
-			System.out.println("Registration ID : " + regid);
-			System.out.println("Username : " + username);
-			System.out.println("Email ID : " + email );
-			System.out.println("Password : " + password);
-			System.out.println("Date : " + date);
-		}
-		System.out.println("Are you sure ? ");
-		String ans = sc.nextLine();
-		if(("yes".equalsIgnoreCase(ans)) || ("YES".equalsIgnoreCase(ans)) || ("Yes".equalsIgnoreCase(ans))) {
-			String sql = "delete from reg_details where reg_id = ?";
-			PreparedStatement smt = con.prepareStatement(sql);
-			smt.setInt(1, reg_id);
-			int rowsd = smt.executeUpdate();
-			if(rowsd > 0) {
-				System.out.println("Record Deleted successfully from table reg_details");
+		boolean ansToDel = true;
+		while(ansToDel) {
+			System.out.println("Deleting records from DB :");
+			System.out.println("Enter a registration Id you want to delete :");
+			int reg_id = Integer.parseInt(sc.nextLine());
+			ResultSet result = fetchDetailsFromDB(con, reg_id);
+				if(result.next()) {
+				int regid  = result.getInt("reg_id");
+					String username = result.getString("username");
+					String email = result.getString("email");
+					String password = result.getString("password");
+					Date date = result.getDate("dor");
+					System.out.println("Registration ID : " + regid);
+					System.out.println("Username : " + username);
+					System.out.println("Email ID : " + email );
+					System.out.println("Password : " + password);
+					System.out.println("Date : " + date);
+				}
+			System.out.println("Are you sure ? ");
+			String ans = sc.nextLine();
+			if(("yes".equalsIgnoreCase(ans)) || ("YES".equalsIgnoreCase(ans)) || ("Yes".equalsIgnoreCase(ans))) {
+				String sql = "delete from reg_details where reg_id = ?";
+				PreparedStatement smt = con.prepareStatement(sql);
+				smt.setInt(1, reg_id);
+				int rowsd = smt.executeUpdate();
+				if(rowsd > 0) {
+					System.out.println("Record Deleted successfully from table reg_details");
+				}
+				ansToDel = false;
+			}else if (("no".equalsIgnoreCase(ans)) || ("NO".equalsIgnoreCase(ans)) || ("No".equalsIgnoreCase(ans)) ) {
+				ansToDel = true;
+				System.out.println("Relax !! we got you, record not deleted yet !! ");
 			}
-			
-		}else if (("no".equalsIgnoreCase(ans)) || ("NO".equalsIgnoreCase(ans)) || ("No".equalsIgnoreCase(ans)) ) {
-			System.out.println("Relax !! we got you, record not deleted yet !! ");
 		}
-		
 			
 	}
 
