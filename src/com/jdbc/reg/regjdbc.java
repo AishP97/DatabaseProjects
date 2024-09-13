@@ -21,31 +21,67 @@ public class regjdbc {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/demodb?serverTimezone=America/New_York",
 					"root", "Dasatva@9");
-
-			System.out.println("Welcome to table demoDb, Please enter your choice :");
-			System.out.println("1. Insert into Database ");
-			System.out.println("2. Update into Database");
-			System.out.println("3. Delete from Database");
-			int ch = Integer.parseInt(sc.nextLine());
-
-			switch (ch) {
-			case 1:
-				dataInsert(con); // This will Validate Data and perform insert
-				break; // break out of the case
-
-			case 2:
-				updateIntoDb(con); // This will update the existing record
-				break; // break out of the case
+			System.out.println("Welcome to table demoDb ! Enjoy working with me today ! ");
 			
-			case 3:
-				deleteFromDb(con);
-				break;
-			default:
-				System.out.println("Invalid Option ! Please select from given options only. ");
-				break; // break out of the case
-			}
+			
+			System.out.println("Please provide your Registration Id :");
+			int regiserid = Integer.parseInt(sc.nextLine());
+			
+			PreparedStatement stt = null;
+			ResultSet rss = null;
+			String sql = "SELECT * FROM ADMIN WHERE REG_ID = ? ";
 
-		} catch (Exception e) {
+			stt = con.prepareStatement(sql);
+			stt.setInt(1,regiserid );
+			rss = stt.executeQuery();
+
+			if (rss.next()) {
+				System.out.println("Hello SuperUser ! Please Enter your choice :");
+				System.out.println("1. Insert into Database ");
+				System.out.println("2. Update into Database");
+				System.out.println("3. Delete from Database");
+				
+				int ch = sc.nextInt();
+
+				switch (ch) {
+				case 1:
+					dataInsert(con); // This will Validate Data and perform insert
+					break; // break out of the case
+
+				case 2:
+					updateIntoDb(con); // This will update the existing record
+					break; // break out of the case
+				
+				case 3:
+					deleteFromDb(con);
+					break;
+				default:
+					System.out.println("Invalid Option ! Please select from given options only. ");
+					break; // break out of the case
+				}
+					
+			}
+			else {
+				System.out.println("Hello User ! Please Enter your Registration ID :");
+				int regiserid1 = Integer.parseInt(sc.nextLine());
+				
+				ResultSet result = fetchDetailsFromDB(con,regiserid1);
+
+				if (result.next()) {
+					int regid = result.getInt("reg_id");
+					printDetailsToBeUpdated(result, regid);
+				}else {
+					System.out.println("No Records Found ! Please try entering a valid registration ID !");
+				}
+			}
+		}
+			
+			
+			//Check if only numeric, not alphabet
+			// Check if the choice is present in the Admin table, if a Superuser, then chpice is 1 else 2
+					
+
+		 catch (Exception e) {
 			System.out.println(e);
 		}
 
